@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Available Rooms{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Available Rooms</h2>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="row row-cols-1 row-cols-md-3 g-4 mt-2">
+        {% for room in rooms %}
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Room {{ room.room_number }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ room.room_type }}</h6>
+                    <p class="card-text">
+                        <strong>Price:</strong> ${{ "%.2f"|format(room.price) }} per night<br>
+                        {% if room.description %}
+                        <strong>Description:</strong> {{ room.description }}<br>
+                        {% endif %}
+                        {% if room.amenities %}
+                        <strong>Amenities:</strong> {{ room.amenities }}
+                        {% endif %}
+                    </p>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#bookModal{{ room.id }}">
+                        Book Now
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Booking Modal -->
+        <div class="modal fade" id="bookModal{{ room.id }}" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Book Room {{ room.room_number }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form action="{{ url_for('book_room', room_id=room.id) }}" method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="check_in{{ room.id }}" class="form-label">Check-in Date</label>
+                                <input type="date" class="form-control" id="check_in{{ room.id }}" name="check_in" required min="{{ today }}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="check_out{{ room.id }}" class="form-label">Check-out Date</label>
+                                <input type="date" class="form-control" id="check_out{{ room.id }}" name="check_out" required min="{{ today }}">
+                            </div>
+                            <p class="mb-0">
+                                <strong>Price per night:</strong> ${{ "%.2f"|format(room.price) }}
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Book Room</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if not rooms %}
+    <div class="alert alert-info mt-4">
+        No rooms available at the moment. Please check back later.
+    </div>
+    {% endif %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Set minimum date for check-in and check-out to today
+    const today = new Date().toISOString().split('T')[0];
+    const checkInInputs = document.querySelectorAll('input[type="date"][name="check_in"]');
+    const checkOutInputs = document.querySelectorAll('input[type="date"][name="check_out"]');
+    
+    checkInInputs.forEach(input => {
+        input.min = today;
+        input.addEventListener('change', function() {
+            const checkOutInput = this.closest('form').querySelector('input[name="check_out"]');
+            checkOutInput.min = this.value;
+            if (checkOutInput.value && checkOutInput.value < this.value) {
+                checkOutInput.value = this.value;
+            }
+        });
+    });
+    
+    checkOutInputs.forEach(input => {
+        input.min = today;
+    });
+});
+</script>
+{% endblock %}

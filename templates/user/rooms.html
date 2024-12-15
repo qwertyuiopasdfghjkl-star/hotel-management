@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Available Rooms{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">Available Rooms</h2>
+    
+    <div class="row">
+        {% for room in rooms %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Room {{ room.room_number }}</h5>
+                    <p class="card-text">
+                        <strong>Type:</strong> {{ room.room_type }}<br>
+                        <strong>Price:</strong> ${{ "%.2f"|format(room.price) }} per night
+                    </p>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#bookingModal{{ room.id }}">
+                        Book Now
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Booking Modal -->
+        <div class="modal fade" id="bookingModal{{ room.id }}" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Book Room {{ room.room_number }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST" action="{{ url_for('book_room', room_id=room.id) }}">
+                            {{ csrf_token() }}
+                            <div class="mb-3">
+                                <label for="check_in" class="form-label">Check-in Date</label>
+                                <input type="date" class="form-control" id="check_in" name="check_in" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="check_out" class="form-label">Check-out Date</label>
+                                <input type="date" class="form-control" id="check_out" name="check_out" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Confirm Booking</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="alert alert-info">No rooms available at the moment.</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
