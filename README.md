@@ -13,13 +13,14 @@ A Flask-based Hotel Management System with user and admin roles, secure authenti
 
 ## Security Features
 
-- CSRF Protection using Flask-WTF
-- Password Hashing using Werkzeug
-- Rate Limiting using Flask-Limiter
-- Session Management using Flask-Login
+- CSRF Protection 
+- Password Hashing 
+- Rate Limiting 
+- Session Management using Login
 - Sanitization
 - Secure Password Storage
-
+git remote add origin YOUR_REPOSITORY_URL
+git push -u origin master
 ## Installation
 
 1. Create a virtual environment:
