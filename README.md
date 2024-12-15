@@ -17,7 +17,7 @@ A Flask-based Hotel Management System with user and admin roles, secure authenti
 - Password Hashing using Werkzeug
 - Rate Limiting using Flask-Limiter
 - Session Management using Flask-Login
-- Input Sanitization
+- Sanitization
 - Secure Password Storage
 
 ## Installation
